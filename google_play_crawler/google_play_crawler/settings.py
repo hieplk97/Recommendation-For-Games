@@ -62,9 +62,14 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'google_play_crawler.pipelines.GooglePlayCrawlerPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'google_play_crawler.pipelines.GameCrawlerPipeline': 300,
+}
+
+MYSQL_HOST = 'localhost'
+MYSQL_DBNAME = 'games_db'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = '123456'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
