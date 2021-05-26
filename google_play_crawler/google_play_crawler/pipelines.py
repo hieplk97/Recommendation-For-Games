@@ -13,7 +13,7 @@ from google_play_crawler import settings
 class GameCrawlerPipeline:
     def __init__(self):
         self.conn = MySQLdb.connect(settings.MYSQL_HOST, settings.MYSQL_USER, settings.MYSQL_PASSWORD,
-                                    settings.MYSQL_DBNAME, charset="utf8", use_unicode=True)
+                                    settings.MYSQL_DBNAME, charset="utf8mb4", use_unicode=False)
         self.cursor = self.conn.cursor()
 
     def process_item(self, item, spider):
@@ -51,8 +51,8 @@ class GameCrawlerPipeline:
                 self.cursor.execute("""UPDATE games SET description = %s, summary = %s, min_installs = %s, 
                 editors_choice = %s, size = %s, android_version = %s, content_rating = %s, ad_supported = %s, 
                 released = %s WHERE id = %s """,
-                                    (item['description'].encode('utf-8'),
-                                     item['summary'].encode('utf-8'),
+                                    (item['description'],
+                                     item['summary'],
                                      item['min_installs'],
                                      item['editors_choice'],
                                      item['size'],

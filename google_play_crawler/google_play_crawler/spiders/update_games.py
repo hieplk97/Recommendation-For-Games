@@ -15,7 +15,7 @@ class UpdateGamesSpider(scrapy.Spider):
 
     def __init__(self):
         self.conn = MySQLdb.connect(settings.MYSQL_HOST, settings.MYSQL_USER, settings.MYSQL_PASSWORD,
-                                    settings.MYSQL_DBNAME, charset="utf8", use_unicode=True)
+                                    settings.MYSQL_DBNAME)
         self.cursor = self.conn.cursor()
 
     def parse(self, response):
