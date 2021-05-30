@@ -1,7 +1,7 @@
 import urllib.error
 
 from scrapy import Spider
-from google_play_scraper import Sort, reviews_all
+from google_play_scraper import Sort, reviews
 
 import MySQLdb
 from google_play_crawler import settings
@@ -31,12 +31,11 @@ class CommentsSpider(Spider):
             title = game[2]
             category = game[3]
             try:
-                results = reviews_all(game_id,
-                                      sleep_milliseconds=1000,  # defaults to 0
-                                      lang='en',  # defaults to 'en'
-                                      country='us',  # defaults to 'us'
-                                      sort=Sort.MOST_RELEVANT,  # defaults to Sort.MOST_RELEVANT
-                                      )
+                results, continuation_token = reviews(game_id,
+                                  lang='en',  # defaults to 'en'
+                                  country='us',  # defaults to 'us'
+                                  sort=Sort.MOST_RELEVANT,  # defaults to Sort.MOST_RELEVANT
+                                  )
 
                 for result in results:
                     review = Review()
