@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <!-- Starts image section -->
+    <div class="row justify-content-md-center mb-4">
+        <h2 class='text-primary'>Predict Iris Flower Species</h2>
+    </div>
+    <!-- Ends image section -->
+
+    <!-- Starts form section -->
+    <div class="form-container ">
+        <form class="form-horizontal" action = "/predict/" method="post">
+
+            <div class="form-group row">
+              <label class="control-label col-sm-2" for="game_name">Game:</label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" id="game_name" name="game_name">
+              </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="control-label col-sm-2" for="predict_method">Method</label>
+                <div class="col-sm-4">
+                    <select class="form-control" name="predict_method" id="predict_method">
+                        <option value="Content-based">Content-based</option>
+                        <option value="Collaborative-Filtering">Collaborative Filtering</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+            <label class="control-label col-sm-2" for="">&nbsp;</label>
+              <div class="col-sm-offset-2 col-sm-4">
+                <button type="submit" class="btn btn-primary">Predict</button>
+              </div>
+            </div>
+          </form>
+        <!-- Ends form section -->
+
+
+    </div>
+
+
+{% endblock %}
