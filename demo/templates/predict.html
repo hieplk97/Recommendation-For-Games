@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="row justify-content-md-center mb-4">
-    <h3 class='text-primary'>Prediction</h3>
-
-    {% for table in tables %}
-            {{titles}}
-            {{ table|safe }}
-    {% endfor %}
+<h3 class='text-primary'>Prediction</h3>
+<div class="row">
+{% for table in tables %}
+        {{titles}}
+        {{ table|safe }}
+{% endfor %}
 </div>
+
 {% endblock %}
