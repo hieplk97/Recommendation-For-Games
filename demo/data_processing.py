@@ -8,11 +8,14 @@ from surprise import dataset
 
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, MetaData, String
-from sqlalchemy.orm import sessionmaker
+
 
 db_connection_str = 'mysql+pymysql://root:123456@localhost:3306/games_db'
 db_connection = create_engine(db_connection_str)
 meta = MetaData()
+games = Table('games', meta,
+              Column('id', String, primary_key=True),
+              Column('title', String))
 
 
 class MyDataset(dataset.DatasetAutoFolds):
@@ -70,15 +73,11 @@ def load_reviews():
 
 
 def get_game_id_by_name(title):
-    games = Table('games', meta,
-                  Column('id', String, primary_key=True),
-                  Column('title', String))
-
     s = games.select().where(games.c.title == title)
     conn = db_connection.connect()
-    result = conn.execute(s).one()
+    result = conn.execute(s)
 
-    return result[1]
+    return result.first()[0]
 
 
 def pre_processing(games_data):
