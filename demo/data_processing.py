@@ -4,10 +4,23 @@ import re
 
 from sklearn.preprocessing import RobustScaler
 
+from surprise import dataset
+
 from sqlalchemy import create_engine
+from sqlalchemy import Table, Column, MetaData, String
+from sqlalchemy.orm import sessionmaker
 
 db_connection_str = 'mysql+pymysql://root:123456@localhost:3306/games_db'
 db_connection = create_engine(db_connection_str)
+meta = MetaData()
+
+
+class MyDataset(dataset.DatasetAutoFolds):
+
+    def __init__(self, df, reader):
+        self.raw_ratings = [(uid, iid, r, None) for (uid, iid, r) in
+                            zip(df['username'], df['game_id'], df['score'])]
+        self.reader = reader
 
 
 def pre_process(text):
@@ -46,6 +59,26 @@ def load_games_data():
     games_data = pre_processing(games_data)
 
     return games_data
+
+
+def load_reviews():
+    reviews = pd.read_sql('SELECT * FROM reviews', con=db_connection)
+    reviews = reviews[reviews['username'] != 'A Google user']
+    reviews_data = reviews[['username', 'game_id', 'score']]
+
+    return reviews_data
+
+
+def get_game_id_by_name(title):
+    games = Table('games', meta,
+                  Column('id', String, primary_key=True),
+                  Column('title', String))
+
+    s = games.select().where(games.c.title == title)
+    conn = db_connection.connect()
+    result = conn.execute(s).one()
+
+    return result[1]
 
 
 def pre_processing(games_data):
