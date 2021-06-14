@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <!-- Starts image section -->
+    <div class="row justify-content-md-center mb-4">
+        <h2 class='text-primary'>Google Play game recommendation</h2>
+    </div>
+    <!-- Ends image section -->
+
+    <!-- Starts form section -->
+    <div class="form-container ">
+        <form class="form-horizontal" action = "/predict/" method="post">
+
+            <div class="form-group row">
+              <label class="control-label col-sm-2" for="username">Username:</label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" id="username" name="username">
+              </div>
+            </div>
+
+            <div class="form-group row">
+            <label class="control-label col-sm-2" for="">&nbsp;</label>
+              <div class="col-sm-offset-2 col-sm-4">
+                <button type="submit" class="btn btn-primary">Predict</button>
+              </div>
+            </div>
+          </form>
+        <!-- Ends form section -->
+
+
+    </div>
+
+
+{% endblock %}

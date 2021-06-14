@@ -7,7 +7,7 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.metrics.pairwise import linear_kernel
 from sklearn.neighbors import NearestNeighbors
 
-from surprise import KNNBaseline
+from surprise import KNNBaseline, SVD
 from surprise import Reader
 
 from data_processing import MyDataset
@@ -71,7 +71,7 @@ class KNN:
         return indices
 
 
-class SurpriselibKNN:
+class ItemBase:
 
     def __init__(self, reviews_data):
         self.reviews_data = reviews_data
@@ -100,24 +100,39 @@ class SurpriselibKNN:
         return games_data[games_data['id'].isin(games)][['title', 'category', 'avg_rating', 'url']]
 
 
-class ItemBaseSVD:
+class UserBase:
+    def __init__(self, reviews_data, games_data):
+        self.reviews_data = reviews_data
+        self.games_data = games_data
+        self.algo = self.run_svd()
 
-    def __init__(self, rating_crosstab):
-        self.rating_crosstab = rating_crosstab
-        self.corr_mat = self.run_SVD()
+    def run_svd(self):
+        reader = Reader(line_format='user item rating', rating_scale=(1, 5))
+        data = MyDataset(self.reviews_data, reader)
+        trainset = data.build_full_trainset()
 
-    def run_SVD(self):
-        SVD = TruncatedSVD(n_components=12, random_state=5)
-        X = self.rating_crosstab.T
-        resultant_matrix = SVD.fit_transform(X)
-        corr_mat = np.corrcoef(resultant_matrix)
+        algo = SVD()
+        return algo.fit(trainset)
 
-        return corr_mat
+    def get_predict(self, username):
+        # get the list of the game ids
+        unique_ids = self.games_data['id'].unique()
+        # get the list of the ids that the userid 1001 has rated
+        iids = self.reviews_data.loc[self.reviews_data['username'] == 'username', 'game_id']
+        # remove the rated games for the recommendations
+        games_to_predict = np.setdiff1d(unique_ids, iids)
 
-    def find_similar_games(self, game_id, games_data):
-        col_idx = self.rating_crosstab.columns.get_loc(game_id)
-        corr_specific = self.corr_mat[col_idx]
-        result = pd.DataFrame({'corr_specific': corr_specific, 'id': self.rating_crosstab.columns}).sort_values(
-            'corr_specific', ascending=False)
-        result = pd.merge(result, games_data, on='id')
-        return result[['title', 'category', 'avg_rating', 'url']].head(10)
+        my_recs = []
+        for iid in games_to_predict:
+
+            my_recs.append(
+                (self.games_data.loc[self.games_data.id == iid, 'title'].values[0],
+                 self.games_data.loc[self.games_data.id == iid, 'category'].values[0],
+                 self.games_data.loc[self.games_data.id == iid, 'avg_rating'].values[0],
+                 self.games_data.loc[self.games_data.id == iid, 'url'].values[0],
+                 self.algo.predict(uid=username, iid=iid).est))
+
+        result = pd.DataFrame(my_recs, columns=['title', 'category', 'avg_rating', 'url', 'predictions'])\
+            .sort_values('predictions', ascending=False).head(10)
+
+        return result[['title', 'category', 'avg_rating', 'url']]

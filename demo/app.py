@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from model import TF_IDF, KNN, SurpriselibKNN, ItemBaseSVD
+from model import TF_IDF, KNN, ItemBase, UserBase
 import data_processing
 
 app = Flask(__name__)
@@ -8,6 +8,11 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     return render_template('home.html')
+
+
+@app.route('/user')
+def user():
+    return render_template('user-base.html')
 
 
 @app.route('/predict/', methods=['GET', 'POST'])
@@ -37,28 +42,31 @@ def predict():
                                        titles="Suggestion for " + name + "'s players")
             elif method == 'SurpriseLib-KNN':
                 game_id = data_processing.get_game_id_by_name(name)
-                knn = SurpriselibKNN(reviews_data)
+                knn = ItemBase(reviews_data)
                 result = knn.get_recommended_games(game_id, games_data)
 
                 return render_template('predict.html',
                                        tables=[result.to_html(index=False, classes='table')],
                                        titles="Suggestion for " + name + "'s players")
-            '''
-            elif method == 'SVD':
-                game_id = data_processing.get_game_id_by_name(name)
-                svd.find_similar_games(game_id, games_data)'''
-        except (KeyError, ValueError):
+            else:
+                username = request.form.get('username')
+                userbase = UserBase(reviews_data, games_data)
+                result = userbase.get_predict(username)
+
+                return render_template('predict.html',
+                                       tables=[result.to_html(index=False, classes='table')],
+                                       titles="Suggestion for user:" + username)
+
+        except (KeyError, ValueError) as e:
+            print(e)
             return render_template('error.html',
-                                   titles="No suggestion for " + name + "'s players")
+                                   titles="No suggestion for ")
 
 
 if __name__ == '__main__':
     games_data = data_processing.load_games_data()
     game_features = data_processing.load_features(games_data, method='Content-based')
     reviews_data = data_processing.load_reviews()
-    #rating_crosstab = reviews_data.pivot_table(values='score', index='username', columns='game_id', fill_value=0)
-
     tf_idf = TF_IDF(games_data, game_features)
-    #svd = ItemBaseSVD(rating_crosstab)
 
     app.run(debug=True)
