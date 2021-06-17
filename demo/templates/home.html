@@ -7,7 +7,7 @@
         <h2 class='text-primary'>Google Play game recommendation</h2>
     </div>
     <!-- Ends image section -->
-
+    <a class='text-primary' href="/user">Predict with userId</a>
     <!-- Starts form section -->
     <div class="form-container ">
         <form class="form-horizontal" action = "/predict/" method="post">
@@ -23,9 +23,8 @@
                 <label class="control-label col-sm-2" for="predict_method">Method</label>
                 <div class="col-sm-4">
                     <select class="form-control" name="predict_method" id="predict_method">
-                        <option value="Content-based-TF-IDF">Content-based TF-IDF</option>
-                        <option value="Content-based-KNN">Content-based KNN</option>
-                        <option value="SurpriseLib-KNN">Item-Based Collaborative Filtering</option>
+                         <option value="TF-IDF">Content-based filtering</option>
+\                        <option value="item-based">Item-Based Collaborative Filtering</option>
                     </select>
                 </div>
             </div>

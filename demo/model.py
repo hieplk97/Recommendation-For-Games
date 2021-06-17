@@ -49,28 +49,6 @@ class TF_IDF:
         return self.games_data[['title', 'category', 'avg_rating', 'url']].iloc[game_indices]
 
 
-class KNN:
-
-    def __init__(self, features, sub_data):
-        self.features = features
-        self.sub_data = sub_data
-        self.indices = self.predict()
-
-    def get_index_from_name(self, name):
-        return self.sub_data[self.sub_data["title"] == name].index.tolist()[0]
-
-    def print_similar_games(self, name):
-        found_id = self.get_index_from_name(name)
-        return self.sub_data[['title', 'category', 'avg_rating', 'url']].iloc[self.indices[found_id][1:]]
-
-    def predict(self):
-        nbrs = NearestNeighbors(n_neighbors=11, algorithm='kd_tree')
-        knn = nbrs.fit(self.features)
-        distances, indices = knn.kneighbors(self.features)
-
-        return indices
-
-
 class ItemBase:
 
     def __init__(self, reviews_data):
@@ -81,7 +59,7 @@ class ItemBase:
         reader = Reader(line_format='user item rating', rating_scale=(1, 5))
         data = MyDataset(self.reviews_data, reader)
         trainset = data.build_full_trainset()
-        sim_options = {'name': 'pearson_baseline', 'user_based': False}
+        sim_options = {'name': 'cosine', 'user_based': False}
         algo = KNNBaseline(sim_options=sim_options)
         algo.fit(trainset)
 
